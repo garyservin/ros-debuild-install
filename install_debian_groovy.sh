@@ -50,11 +50,11 @@ PACKAGE_VERSION=$2
   set +e # we're using a non-zero return to tell us something
   if [ "x$PACKAGE_VERSION" != "x" ]; then
     echo -n " (Version ${PACKAGE_VERSION})... "
-    dpkg -s ${PACKAGE_NAME} | grep -q "Version: ${PACKAGE_VERSION}"
+    dpkg -s ${PACKAGE_NAME} 2> /dev/null | grep -q "Version: ${PACKAGE_VERSION}"
     RESULT=$?
   else
     echo -n "... "
-    dpkg -s ${PACKAGE_NAME}
+    dpkg -s ${PACKAGE_NAME} 2> /dev/null
     RESULT=$?
   fi
   set -e
@@ -117,7 +117,7 @@ if ! debian_package_installed "python-buildfarm"; then
   (
     git clone git://github.com/willowgarage/catkin-debs.git
     cd catkin-debs
-    git co groovy-devel
+    git checkout groovy-devel
     make deb_dist
     dpkg -i deb_dist/python-buildfarm_0.0.1-1_all.deb
   )
