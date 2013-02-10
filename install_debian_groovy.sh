@@ -59,11 +59,13 @@ PACKAGE_VERSION=$2
   set -e
   if [ $RESULT -ne 0 ]; then
     echo " Not found!"
-    return 1
+    exit 1
   else
     echo " OK!"
-    return 0
+    exit 0
   fi
+)
+return $?
 }
 
 function ros_bootstrap_package() {

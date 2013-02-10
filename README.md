@@ -2,6 +2,9 @@
 
 This script is meant to make it easy to set up a deb-based install on a non-Ubuntu system that is still debian-based.  I've been using it to install packages from the [ROS gbp repository set][1] for a little while now, and bootstrapping new installs on Debian.
 
+It gets you basically to step 2.2 in the [Source installation][3] instructions, you will have to build your rosbuild packages
+on your own.
+
 [1]: https://github.com/ros-gbp
 
 I've tested it on:
@@ -9,8 +12,9 @@ I've tested it on:
  * Debian sid
  * Debian wheezy
 
-It gets you basically to step 2.2 in the [Source installation][3] instructions, you will have to build your rosbuild packages
-on your own.
+It does NOT Work on:
+
+ * Debian squeeze (CMake version is too old)
 
 [3]: http://ros.org/wiki/groovy/Installation/Source#Build_the_rosbuild_Packages
 
