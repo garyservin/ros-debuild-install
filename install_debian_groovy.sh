@@ -119,7 +119,7 @@ if ! debian_package_installed "python-buildfarm"; then
     git clone git://github.com/willowgarage/catkin-debs.git
     cd catkin-debs
     make deb_dist
-    dpkg -i deb_dist/python-buildfarm_0.0.1-1_all.deb
+    sudo dpkg -i deb_dist/python-buildfarm_0.0.1-1_all.deb
   )
 fi
 
