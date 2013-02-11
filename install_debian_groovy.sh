@@ -115,9 +115,9 @@ rosdep update
 if ! debian_package_installed "python-buildfarm"; then
   echo "* Missing python-buildfarm, downloading and building..."
   (
+    sudo apt-get -y install python-stdeb
     git clone git://github.com/willowgarage/catkin-debs.git
     cd catkin-debs
-    git checkout groovy-devel
     make deb_dist
     dpkg -i deb_dist/python-buildfarm_0.0.1-1_all.deb
   )

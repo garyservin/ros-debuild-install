@@ -58,11 +58,11 @@ class VcsPackageFetcher(object):
       if not updated:
         print("WARNING: Repo at %s changed url from %s to %s or update failed. Redownloading!" % (repo_path, client.get_url(), repo_url))
         shutil.rmtree(repo_path)
+        client._do_fetch()
         checkedout = client.checkout(pkg_info['url'], pkg_info['version'], shallow=True)
         if not checkedout:
           print("ERROR: Repo at %s could not be checked out from %s with version %s!" % (repo_path, repo_url, pkg_info['version']))
 
-        client._do_fetch()
     else:
       checkedout = client.checkout(pkg_info['url'], pkg_info['version'], shallow=True)
       if not checkedout:
