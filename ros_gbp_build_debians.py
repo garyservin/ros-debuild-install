@@ -54,7 +54,7 @@ class VcsPackageFetcher(object):
     client = GitClient(repo_path)
     if client.path_exists():
       if client.get_url() == repo_url:
-        updated = client.update(pkg_info['version'], force_fetch=True)
+        updated = client.update(pkg_info['version'], force_fetch=True, verbose=True)
       if not updated:
         print("WARNING: Repo at %s changed url from %s to %s or update failed. Redownloading!" % (repo_path, client.get_url(), repo_url))
         shutil.rmtree(repo_path)
