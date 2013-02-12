@@ -124,6 +124,14 @@ def build_debian_package(package_fetcher, package_name, apt_cache, rd_obj, level
     raise RosGitBuildError("%s!!! Error building %s from %s: %s \n %s" % (level_prefix, deb_package_name, package_fetcher.url(package_name), 'debuild binary', message))
   deb_files = glob.glob(os.path.join(repo_path, '..', '%s*.deb' % (deb_package_name + '_' + rd_obj.get_version(package_name, full_version=True))))
   if len(deb_files) > 0:
+    # install the deb
+    from apt.debfile import DebPackage
+    deb_pkg = DebPackage(deb_files[0])
+    deb_pkg.check()
+    packages_needed = ' '.join(deb_pkg.missing_deps)
+    (returncode, result, message) = run_shell_command('sudo apt-get -y install %s' % packages_needed, shell=True, show_stdout=True)
+    if returncode != 0:
+      raise RosGitBuildError("%s!!! Error building %s: can't install dependent packages %s" % (level_prefix, deb_package_name, packages_needed))
     (returncode, result, message) = run_shell_command('sudo dpkg -i %s' % deb_files[0], shell=True, show_stdout=True)
     if returncode != 0:
       raise RosGitBuildError("%s!!! Error building %s from %s: %s \n %s" % (level_prefix, deb_package_name, package_fetcher.url(package_name), 'debuild binary', message))
