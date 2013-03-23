@@ -98,12 +98,12 @@ return $?
 echo "* Downloading and installing bootstrap packages..."
 BASE_PACKAGES_URL="http://packages.ros.org/ros/ubuntu/"
 # NOTE: order is important.
-ros_bootstrap_package python-catkin-pkg 0.1.9 "${BASE_PACKAGES_URL}pool/main/c/catkinpkg/python-catkin-pkg_0.1.9-1_all.deb"
-ros_bootstrap_package python-vcstools   0.1.28 "${BASE_PACKAGES_URL}pool/main/v/vcstools/python-vcstools_0.1.28-1_all.deb"
-ros_bootstrap_package python-rosinstall 0.6.24 "${BASE_PACKAGES_URL}pool/main/r/rosinstall/python-rosinstall_0.6.24-1_all.deb"
+ros_bootstrap_package python-catkin-pkg 0.1.10 "${BASE_PACKAGES_URL}pool/main/c/catkinpkg/python-catkin-pkg_0.1.10-1_all.deb"
+ros_bootstrap_package python-vcstools   0.1.30 "${BASE_PACKAGES_URL}pool/main/v/vcstools/python-vcstools_0.1.30-1_all.deb"
+ros_bootstrap_package python-rosinstall 0.6.26 "${BASE_PACKAGES_URL}pool/main/r/rosinstall/python-rosinstall_0.6.26-1_all.deb"
 ros_bootstrap_package python-rospkg     1.0.18 "${BASE_PACKAGES_URL}pool/main/r/rospkg/python-rospkg_1.0.18-1_all.deb"
-ros_bootstrap_package python-rosdep     0.10.13 "${BASE_PACKAGES_URL}pool/main/r/rosdep/python-rosdep_0.10.13-1_all.deb"
-ros_bootstrap_package python-wstool     0.0.2 "${BASE_PACKAGES_URL}pool/main/w/wstool/python-wstool_0.0.2-1_all.deb"
+ros_bootstrap_package python-rosdep     0.10.14 "${BASE_PACKAGES_URL}pool/main/r/rosdep/python-rosdep_0.10.14-1_all.deb"
+ros_bootstrap_package python-wstool     0.0.3 "${BASE_PACKAGES_URL}pool/main/w/wstool/python-wstool_0.0.3-1_all.deb"
 
 echo "* Bootstrapping rosdep..."
 
