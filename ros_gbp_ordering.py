@@ -23,8 +23,8 @@ from buildfarm.dependency_walker import VcsFileCache
 
 def github_get_file_contents(url, version, filename):
   # https://github.com/ros-gbp/ros_comm-release/raw/release/topic_tools/1.9.19/package.xml
-  # replace git:// with http://
-  new_url = url.replace('git://', 'http://')
+  # replace git:// with https://
+  new_url = url.replace('git://', 'https://')
   # cut the .git off the end
   new_url = new_url.replace('.git', '')
   # add the /raw, package version, and file path.
@@ -105,6 +105,8 @@ class VcsPackagesInfo(object):
     pkg_string = None
     if self.xml_cache is not None:
       maybe_cached = self.xml_cache.get(package_name, pkg_info['version'])
+      if maybe_cached is None:
+        maybe_cached = self.xml_cache.get(package_name, pkg_info['full_version'])
       if maybe_cached is not None:
         print('Found %s (version %s) in package.xml cache..' % (package_name, pkg_info['version']))
         pkg_string = maybe_cached
@@ -113,18 +115,17 @@ class VcsPackagesInfo(object):
       url_fetched_before = url in self.urls_updated
       self.urls_updated.add(url)
       self.vcs_cache._skip_update = url_fetched_before
+      print "%s (version %s) not in cache, fetching package.xml..." % (package_name, pkg_info['version'])
       try:
-        #print('Fetching package info from repository for %s from %s' % (package_name, url))
-        ## TODO: implement shortcut for GITHUB, since HTTP is probably infinitely faster than cloning an entire repository
-        if url.startswith('git://github.com/'):
-          pkg_string = github_get_file_contents(url, pkg_info['version'], 'package.xml')
-        else:
-          pkg_string = self.vcs_cache.get_file_contents('git', url, pkg_info['version'], 'package.xml')
-        if self.xml_cache is not None:
-          self.xml_cache.store(package_name, pkg_info['version'], pkg_string)
-      except VcsError as ex:
-        print("Failed to get package.xml for %s.  Error: %s" % (package_name, ex))
-        raise ex
+        pkg_string = self.get_package_xml(url, pkg_info['full_version'])
+      except: # This is probably because full_version is wrong.  Try again with the regular version.
+        try:
+          pkg_string = self.get_package_xml(url, pkg_info['version'])
+        except VcsError as ex:
+          print("Failed to get package.xml for %s.  Error: %s" % (package_name, ex))
+          raise ex
+      if self.xml_cache is not None:
+        self.xml_cache.store(package_name, pkg_info['full_version'], pkg_string)
       if not self.vcs_cache._skip_update:
         #print("Sleeping 1s to avoid github throttling..")
         time.sleep(1)
@@ -134,6 +135,14 @@ class VcsPackagesInfo(object):
     except InvalidPackage as ex:
       print('package.xml for %s is invalid.  Error: %s' % (package_name, ex))
     return p
+
+  def get_package_xml(self, url, version):
+    if url.startswith('git://github.com/') or url.startswith('https://github.com/'):
+      try:
+        return github_get_file_contents(url, version, 'package.xml')
+      except: # Okay, Let's just try the VCS way instead then.
+        pass
+    return self.vcs_cache.get_file_contents('git', url, version, 'package.xml')
 
   def __getitem__(self, key):
     if not self.exists(key):
