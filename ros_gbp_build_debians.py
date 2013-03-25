@@ -46,6 +46,15 @@ class VcsPackageFetcher(object):
     pkg_info = self._rosdist.get_package_checkout_info()[package_name]
     return pkg_info['url']
 
+  def fetch_with_tagcheck(self, client, pkg_info):
+    checkedout = client.checkout(pkg_info['url'], refname=None, shallow=False, verbose=True)
+    client._do_fetch()
+    tag = pkg_info['version'] if client.is_tag(pkg_info['version'], fetch=False) else pkg_info['full_version']
+    checkedout = client.update(tag, force_fetch=False, verbose=True)
+    if not checkedout:
+      print("ERROR: Repo at %s could not be checked out from %s with version %s!" % (repo_path, repo_url, tag))
+
+
   def checkout_package(self, package_name):
     """Fetches and checks out the correct version of a package for the rosdistro"""
     pkg_info = self._rosdist.get_package_checkout_info()[package_name]
@@ -53,24 +62,17 @@ class VcsPackageFetcher(object):
     name = os.path.basename(pkg_info['url'])
     repo_path = os.path.join(self.workspace, name)
     client = GitClient(repo_path)
-    tag = client.is_tag(pkg_info['version']) ? pkg_info['version'] : pkg_info['full_version']
+    tag = pkg_info['version'] if client.is_tag(pkg_info['version']) else pkg_info['full_version']
     if client.path_exists():
       if client.get_url() == repo_url:
         updated = client.update(tag, force_fetch=True, verbose=True)
       if not updated:
         print("WARNING: Repo at %s changed url from %s to %s or update failed. Redownloading!" % (repo_path, client.get_url(), repo_url))
         shutil.rmtree(repo_path)
-        checkedout = client.checkout(pkg_info['url'], refname=None, shallow=False, verbose=True)
-        client._do_fetch()
-        tag = client.is_tag(pkg_info['version'], fetch=False) ? pkg_info['version'] : pkg_info['full_version']
-        cilient.update(tag, force_fetch=False, verbose=True)
-        if not checkedout:
-          print("ERROR: Repo at %s could not be checked out from %s with version %s!" % (repo_path, repo_url, pkg_info['version']))
+        self.fetch_with_tagcheck(client, pkg_info)
 
     else:
-      checkedout = client.checkout(pkg_info['url'], pkg_info['version'], shallow=False, verbose=True)
-      if not checkedout:
-        print("ERROR: Repo at %s could not be checked out from %s with version %s!" % (repo_path, repo_url, pkg_info['version']))
+      self.fetch_with_tagcheck(client, pkg_info)
 
     return repo_path
 
