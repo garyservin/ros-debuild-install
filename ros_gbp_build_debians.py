@@ -6,6 +6,7 @@ from vcstools.git import GitClient
 from vcstools.vcs_base import VcsError
 import apt
 import os.path
+import shutil
 
 import rospkg.distro
 from buildfarm.rosdistro import Rosdistro, debianize_package_name
@@ -52,14 +53,17 @@ class VcsPackageFetcher(object):
     name = os.path.basename(pkg_info['url'])
     repo_path = os.path.join(self.workspace, name)
     client = GitClient(repo_path)
+    tag = client.is_tag(pkg_info['version']) ? pkg_info['version'] : pkg_info['full_version']
     if client.path_exists():
       if client.get_url() == repo_url:
-        updated = client.update(pkg_info['version'], force_fetch=True, verbose=True)
+        updated = client.update(tag, force_fetch=True, verbose=True)
       if not updated:
         print("WARNING: Repo at %s changed url from %s to %s or update failed. Redownloading!" % (repo_path, client.get_url(), repo_url))
         shutil.rmtree(repo_path)
-        checkedout = client.checkout(pkg_info['url'], pkg_info['version'], shallow=False, verbose=True)
+        checkedout = client.checkout(pkg_info['url'], refname=None, shallow=False, verbose=True)
         client._do_fetch()
+        tag = client.is_tag(pkg_info['version'], fetch=False) ? pkg_info['version'] : pkg_info['full_version']
+        cilient.update(tag, force_fetch=False, verbose=True)
         if not checkedout:
           print("ERROR: Repo at %s could not be checked out from %s with version %s!" % (repo_path, repo_url, pkg_info['version']))
 
