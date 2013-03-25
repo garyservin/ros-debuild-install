@@ -62,8 +62,8 @@ class VcsPackageFetcher(object):
     name = os.path.basename(pkg_info['url'])
     repo_path = os.path.join(self.workspace, name)
     client = GitClient(repo_path)
-    tag = pkg_info['version'] if client.is_tag(pkg_info['version']) else pkg_info['full_version']
     if client.path_exists():
+      tag = pkg_info['version'] if client.is_tag(pkg_info['version']) else pkg_info['full_version']
       if client.get_url() == repo_url:
         updated = client.update(tag, force_fetch=True, verbose=True)
       if not updated:
