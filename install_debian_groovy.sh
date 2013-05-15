@@ -47,7 +47,7 @@ PACKAGE_NAME=$1
 PACKAGE_VERSION=$2
 (
   echo -n "Checking for ${PACKAGE_NAME}"
-  set +e # we're using a non-zero return to tell us something
+  set +e # we are using a non-zero return to tell us something
   if [ "x$PACKAGE_VERSION" != "x" ]; then
     echo -n " (Version ${PACKAGE_VERSION})... "
     dpkg -s ${PACKAGE_NAME} 2> /dev/null | grep -q "Version: ${PACKAGE_VERSION}"
@@ -98,11 +98,12 @@ return $?
 echo "* Downloading and installing bootstrap packages..."
 BASE_PACKAGES_URL="http://packages.ros.org/ros/ubuntu/"
 # NOTE: order is important.
-ros_bootstrap_package python-catkin-pkg 0.1.10 "${BASE_PACKAGES_URL}pool/main/c/catkinpkg/python-catkin-pkg_0.1.10-1_all.deb"
+ros_bootstrap_package python-catkin-pkg 0.1.11 "${BASE_PACKAGES_URL}pool/main/c/catkinpkg/python-catkin-pkg_0.1.11-1_all.deb"
 ros_bootstrap_package python-vcstools   0.1.30 "${BASE_PACKAGES_URL}pool/main/v/vcstools/python-vcstools_0.1.30-1_all.deb"
-ros_bootstrap_package python-rosinstall 0.6.26 "${BASE_PACKAGES_URL}pool/main/r/rosinstall/python-rosinstall_0.6.26-1_all.deb"
-ros_bootstrap_package python-rospkg     1.0.18 "${BASE_PACKAGES_URL}pool/main/r/rospkg/python-rospkg_1.0.18-1_all.deb"
-ros_bootstrap_package python-rosdep     0.10.14 "${BASE_PACKAGES_URL}pool/main/r/rosdep/python-rosdep_0.10.14-1_all.deb"
+ros_bootstrap_package python-rosdistro  0.2.8  "${BASE_PACKAGES_URL}pool/main/r/rosdistro/python-rosdistro_0.2.8-1_all.deb"
+ros_bootstrap_package python-rosinstall 0.6.27 "${BASE_PACKAGES_URL}pool/main/r/rosinstall/python-rosinstall_0.6.28-1_all.deb"
+ros_bootstrap_package python-rospkg     1.0.20 "${BASE_PACKAGES_URL}pool/main/r/rospkg/python-rospkg_1.0.20-1_all.deb"
+ros_bootstrap_package python-rosdep     0.10.18 "${BASE_PACKAGES_URL}pool/main/r/rosdep/python-rosdep_0.10.18-1_all.deb"
 ros_bootstrap_package python-wstool     0.0.3 "${BASE_PACKAGES_URL}pool/main/w/wstool/python-wstool_0.0.3-1_all.deb"
 
 echo "* Bootstrapping rosdep..."

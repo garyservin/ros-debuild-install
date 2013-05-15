@@ -9,7 +9,7 @@ import os.path
 import shutil
 
 import rospkg.distro
-from buildfarm.rosdistro import Rosdistro, debianize_package_name
+from buildfarm.ros_distro import Rosdistro, debianize_package_name
 
 import glob
 import argparse

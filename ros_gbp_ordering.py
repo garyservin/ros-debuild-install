@@ -18,7 +18,7 @@ import catkin_pkg.package as catpak
 from catkin_pkg.package import InvalidPackage
 
 import rospkg.distro
-from buildfarm.rosdistro import Rosdistro, debianize_package_name
+from buildfarm.ros_distro import Rosdistro, debianize_package_name
 from buildfarm.dependency_walker import VcsFileCache
 
 def github_get_file_contents(url, version, filename):
