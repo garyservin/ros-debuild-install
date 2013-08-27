@@ -254,7 +254,7 @@ which that package requires to build."""
   return package_dependencies
 
 def package_build_order(package_names, workspace_path, distro_name='groovy', package_cache=None):
-  rd = Rosdistro('groovy')
+  rd = Rosdistro(distro_name)
   packs = get_packages_dependencies(package_names, workspace_path, rd, package_cache)
 
   from itertools import chain
