@@ -18,6 +18,8 @@ def parse_options():
   parser = argparse.ArgumentParser(description = 'Builds and installs Debian packages for ROS git-buildpackage packages.')
   parser.add_argument('--workspace', dest='workspace', default='./tmp_workspace',
       help='Directory for building packages within.  Repositories will be checked out into this directory.')
+  parser.add_argument('--distro', dest='distro', default='groovy',
+      help='The ros distro. Probably groovy or hydro.')
   parser.add_argument(dest='packages', nargs='+',
       help='List of ROS packages to install')
   args = parser.parse_args()
@@ -65,6 +67,9 @@ class VcsPackageFetcher(object):
     if client.path_exists():
       tag = pkg_info['version'] if client.is_tag(pkg_info['version']) else pkg_info['full_version']
       if client.get_url() == repo_url:
+        # Sometimes debian/rules gets mussed with in the build process.
+        # This should translate to 'git checkout debian/rules' which should reset so we can change tags
+        client.update('debian/rules', verbose=True)
         updated = client.update(tag, force_fetch=True, verbose=True)
       if not updated:
         print("WARNING: Repo at %s changed url from %s to %s or update failed. Redownloading!" % (repo_path, client.get_url(), repo_url))
@@ -89,11 +94,14 @@ def install_debian_build_dependencies(package_dir):
   else:
     return True
 
+
 def build_debian_package(package_fetcher, package_name, apt_cache, rd_obj, levels=0, get_dependencies=False):
+  unstable_target_distros = { 'groovy': 'quantal', 'hydro': 'raring' }
+  target_ubuntu_distro = unstable_target_distros[rd_obj._rosdistro]
   level_prefix = '--' * levels
   print("%s> Building package %s" % (level_prefix, package_name))
-  deb_package_name = debianize_package_name('groovy', package_name)
-  deb_package_version = rd_obj.get_version(package_name, full_version=True) + 'quantal'
+  deb_package_name = rd_obj.debianize_package_name(package_name)
+  deb_package_version = rd_obj.get_version(package_name, full_version=True) + target_ubuntu_distro
   print("%s--> Checking if installed (%s, %s).." % (level_prefix, deb_package_name, deb_package_version)),
   if deb_package_name in apt_cache and apt_cache[deb_package_name].installed.version == deb_package_version:
     print("OK")
@@ -101,12 +109,12 @@ def build_debian_package(package_fetcher, package_name, apt_cache, rd_obj, level
     return True
   print("missing!")
   if get_dependencies:
-    dependencies = package_build_order([package_name], package_fetcher.workspace, distro_name='groovy', package_cache=VcsPackagesCache())
+    dependencies = package_build_order([package_name], package_fetcher.workspace, distro_name=rd_obj._rosdistro, package_cache=VcsPackagesCache())
     print("%s--> Checking Dependencies:" % (level_prefix))
     for dep_pkg_name in dependencies:
       if dep_pkg_name != package_name:
         print("%s---- %s....." % (level_prefix, dep_pkg_name)),
-        debian_pkg_name = debianize_package_name('groovy', dep_pkg_name)
+        debian_pkg_name = rd_obj.debianize_package_name(dep_pkg_name)
         if debian_pkg_name in apt_cache and apt_cache[debian_pkg_name].installed is not None:
           print(" OK! (installed version %s)" % apt_cache[debian_pkg_name].installed.version)
         else:
@@ -116,7 +124,7 @@ def build_debian_package(package_fetcher, package_name, apt_cache, rd_obj, level
   print("%s>>> Build debian package %s from repo %s" % (level_prefix, deb_package_name, package_fetcher.url(package_name)))
   repo_path = package_fetcher.checkout_package(package_name)
   client = GitClient(repo_path)
-  deb_package_tag = deb_package_name + '_' + rd_obj.get_version(package_name, full_version=True) + '_quantal'
+  deb_package_tag = deb_package_name + '_' + rd_obj.get_version(package_name, full_version=True) + '_' + target_ubuntu_distro
   bloom_package_version = 'debian/' + deb_package_tag
   client.update(bloom_package_version)
   installed_builddeps = install_debian_build_dependencies(repo_path)
@@ -146,7 +154,7 @@ def build_debian_package(package_fetcher, package_name, apt_cache, rd_obj, level
 
 if __name__ == '__main__':
   args = parse_options()
-  rd = Rosdistro('groovy')
+  rd = Rosdistro(args.distro)
   fetch = VcsPackageFetcher(rd, args.workspace)
   cache = apt.Cache()
   for package in args.packages:

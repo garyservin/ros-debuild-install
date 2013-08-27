@@ -1,12 +1,13 @@
 #! /bin/bash
 
-echo "Debian Groovy Package-Based Installer"
+echo "Debian ROS Package-rebuilding Installer"
 
-EXPECTED_ARGS=1
+EXPECTED_ARGS=2
 
 if [ $# -ne $EXPECTED_ARGS ]; then
-  echo "Usage: `basename $0` {variant}"
-  echo "{variant} is usually desktop-full, desktop, or ros-base"
+  echo "Usage: `basename $0` {release} {variant}"
+  echo "{release} is groovy or hydro"
+  echo "{variant} is usually ros_comm, desktop-full, or desktop"
   echo " - but it could be anything from REP 131: http://ros.org/reps/rep-0131.html#variants"
   exit 65
 fi
@@ -70,12 +71,14 @@ return $?
 }
 
 function ros_bootstrap_package() {
-PACKAGE_NAME=$1
-PACKAGE_VERSION=$2
-PACKAGE_URL=$3
+SOURCE_PACKAGE_NAME=$1
+PACKAGE_NAME=$2
+PACKAGE_VERSION=$3
+BASE_PACKAGE_URL=$4
 (
   if ! debian_package_installed ${PACKAGE_NAME} ${PACKAGE_VERSION}; then
-    echo "${PACKAGE_NAME} missing - downloading and installing.."
+    PACKAGE_URL=${BASE_PACKAGES_URL}pool/main/${SOURCE_PACKAGE_NAME:0:1}/${SOURCE_PACKAGE_NAME}/${PACKAGE_NAME}_${PACKAGE_VERSION}_all.deb
+    echo "${PACKAGE_NAME} missing - downloading and installing from ${PACKAGE_URL}.."
     filename=${PACKAGE_URL##*/}
     rm -f $filename
     set +e # We check the returns manually so we can display a message
@@ -98,13 +101,14 @@ return $?
 echo "* Downloading and installing bootstrap packages..."
 BASE_PACKAGES_URL="http://packages.ros.org/ros/ubuntu/"
 # NOTE: order is important.
-ros_bootstrap_package python-catkin-pkg 0.1.11 "${BASE_PACKAGES_URL}pool/main/c/catkinpkg/python-catkin-pkg_0.1.11-1_all.deb"
-ros_bootstrap_package python-vcstools   0.1.30 "${BASE_PACKAGES_URL}pool/main/v/vcstools/python-vcstools_0.1.30-1_all.deb"
-ros_bootstrap_package python-rosdistro  0.2.8  "${BASE_PACKAGES_URL}pool/main/r/rosdistro/python-rosdistro_0.2.8-1_all.deb"
-ros_bootstrap_package python-rosinstall 0.6.27 "${BASE_PACKAGES_URL}pool/main/r/rosinstall/python-rosinstall_0.6.28-1_all.deb"
-ros_bootstrap_package python-rospkg     1.0.20 "${BASE_PACKAGES_URL}pool/main/r/rospkg/python-rospkg_1.0.20-1_all.deb"
-ros_bootstrap_package python-rosdep     0.10.18 "${BASE_PACKAGES_URL}pool/main/r/rosdep/python-rosdep_0.10.18-1_all.deb"
-ros_bootstrap_package python-wstool     0.0.3 "${BASE_PACKAGES_URL}pool/main/w/wstool/python-wstool_0.0.3-1_all.deb"
+ros_bootstrap_package catkinpkg  python-catkin-pkg 0.1.19-1 ${BASE_PACKAGES_URL}
+ros_bootstrap_package vcstools   python-vcstools   0.1.31-1 ${BASE_PACKAGES_URL}
+ros_bootstrap_package rosdistro  python-rosdistro  0.2.13-1  ${BASE_PACKAGES_URL}
+ros_bootstrap_package rosinstall python-rosinstall 0.6.29-1 ${BASE_PACKAGES_URL}
+ros_bootstrap_package rospkg     python-rospkg     1.0.21-1 ${BASE_PACKAGES_URL}
+ros_bootstrap_package rosinstallgenerator python-rosinstall-generator 0.1.2-1 ${BASE_PACKAGES_URL}
+ros_bootstrap_package rosdep     python-rosdep     0.10.21-1 ${BASE_PACKAGES_URL}
+ros_bootstrap_package wstool     python-wstool     0.0.3-1 ${BASE_PACKAGES_URL}
 
 echo "* Bootstrapping rosdep..."
 
@@ -124,29 +128,31 @@ if ! debian_package_installed "python-buildfarm"; then
   )
 fi
 
-INSTALL_VARIANT=$1
+ROSRELEASE_NAME=$1
+INSTALL_VARIANT=$2
 
-echo "* Downloading list of packages in ${INSTALL_VARIANT}..."
+echo "* Generating list of packages in ${ROSRELEASE_NAME} ${INSTALL_VARIANT}..."
 
-VARIANT_YAML_URL="http://packages.ros.org/web/rosinstall/generate/raw/groovy/${INSTALL_VARIANT}"
+#VARIANT_YAML_URL="http://packages.ros.org/web/rosinstall/generate/raw/${ROSRELEASE_NAME}/${INSTALL_VARIANT}"
+#wget -O packages.yaml $VARIANT_YAML_URL
 
-wget -O packages.yaml $VARIANT_YAML_URL
+rosinstall_generator ${INSTALL_VARIANT} --rosdistro ${ROSRELEASE_NAME} --deps --wet-only > packages.yaml
 
-PACKAGE_NAMES=`python -c "from yaml import load; print ' '.join([x['tar']['local-name'] for x in load(file('packages.yaml').read())])"`
+PACKAGE_NAMES=`python -c "from yaml import load; print ' '.join([x['git']['local-name'] for x in load(file('packages.yaml').read())])"`
 
-echo "* Compiling and Installing ${INSTALL_VARIANT} packages: ${PACKAGE_NAMES}"
+echo "* Compiling and Installing ${ROSRELEASE_NAME} ${INSTALL_VARIANT} packages: ${PACKAGE_NAMES}"
 
-PACKAGES_IN_ORDER=$(python ../ros_gbp_ordering.py ${PACKAGE_NAMES} | tail -1)
+PACKAGES_IN_ORDER=$(python ../ros_gbp_ordering.py --distro ${ROSRELEASE_NAME} ${PACKAGE_NAMES} | tail -1)
 
 echo "* In compilation order: ${PACKAGES_IN_ORDER}"
 
 for package in ${PACKAGES_IN_ORDER}; do
-  python ../ros_gbp_build_debians.py $package
+  python ../ros_gbp_build_debians.py --distro ${ROSRELEASE_NAME} $package
 done
 
 echo "* All done :)"
 
 echo "Don't forget to source the ros environment before you go on in the installation:"
 echo 
-echo "source /opt/ros/groovy/setup.sh"
+echo "source /opt/ros/${ROSRELEASE_NAME}/setup.sh"
 

@@ -38,7 +38,7 @@ def parse_options():
   parser.add_argument('--workspace', dest='workspace', default='./tmp_workspace',
       help='A directory where repositories will be checked out into.')
   parser.add_argument('--distro', dest='distro', default='groovy',
-      help='The ros distro. electric, fuerte, groovy')
+      help='The ros distro. electric, fuerte, groovy, hydro')
   parser.add_argument('--ignore-cache', dest='ignore_cache', default=False, action="store_true",
       help='Ignore the packages.xml cache and refresh all dependency info.')
   parser.add_argument(dest='packages', nargs='+')
