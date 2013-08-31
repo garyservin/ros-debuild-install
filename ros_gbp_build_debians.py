@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from ros_gbp_ordering import package_build_order, VcsPackagesCache
+from ros_gbp_ordering import package_build_order
 from vcstools.common import run_shell_command
 from vcstools.git import GitClient
 from vcstools.vcs_base import VcsError
@@ -109,7 +109,7 @@ def build_debian_package(package_fetcher, package_name, apt_cache, rd_obj, level
     return True
   print("missing!")
   if get_dependencies:
-    dependencies = package_build_order([package_name], package_fetcher.workspace, distro_name=rd_obj._rosdistro, package_cache=VcsPackagesCache())
+    dependencies = package_build_order([package_name], distro_name=rd_obj._rosdistro)
     print("%s--> Checking Dependencies:" % (level_prefix))
     for dep_pkg_name in dependencies:
       if dep_pkg_name != package_name:
