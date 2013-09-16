@@ -103,10 +103,12 @@ def build_debian_package(package_fetcher, package_name, apt_cache, rd_obj, level
   deb_package_name = rd_obj.debianize_package_name(package_name)
   deb_package_version = rd_obj.get_version(package_name, full_version=True) + target_ubuntu_distro
   print("%s--> Checking if installed (%s, %s).." % (level_prefix, deb_package_name, deb_package_version)),
-  if deb_package_name in apt_cache and apt_cache[deb_package_name].installed.version == deb_package_version:
-    print("OK")
-    print("%s is installed already - remove the package if you want to re-install." % (package_name))
-    return True
+  if deb_package_name in apt_cache:
+    installed = apt_cache[deb_package_name].installed
+    if installed is not None and installed.version == deb_package_version:
+      print("OK")
+      print("%s is installed already - remove the package if you want to re-install." % (package_name))
+      return True
   print("missing!")
   if get_dependencies:
     dependencies = package_build_order([package_name], distro_name=rd_obj._rosdistro)
