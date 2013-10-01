@@ -1,4 +1,4 @@
-# Debian ROS Groovy easy install script
+# Debian ROS easy "debian packages" install script
 
 This script is meant to make it easy to set up a deb-based install on a non-Ubuntu system that is still debian-based.  I've been using it to install packages from the [ROS gbp repository set][1] for a little while now, and bootstrapping new installs on Debian.
 
@@ -16,15 +16,15 @@ It does NOT Work on:
 
  * Debian squeeze (CMake version is too old)
 
-[3]: http://ros.org/wiki/groovy/Installation/Source#Build_the_rosbuild_Packages
+[3]: http://ros.org/wiki/hydro/Installation/Source#Build_the_rosbuild_Packages
 
 # How to use
 
 Initial setup:
 
-    git clone git://github.com/jamuraa/ros-groovy-debuild-install
-    cd ros-groovy-debuild-install
-    bash install_debian_groovy.sh desktop
+    git clone git://github.com/jamuraa/ros-debuild-install
+    cd ros-debuild-install
+    bash install_debian_groovy.sh hydro desktop
 
 At this point, walking away for a little while is not a bad idea.  It takes a long time (hours) to download, compile and install these debs.  If you need to reboot or stop the work for some reason, you can stop this script with Ctrl-C at pretty much any time, and come back and run the last line again, it should pick up reasonably near to where it left off.
 

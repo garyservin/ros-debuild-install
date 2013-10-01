@@ -132,10 +132,10 @@ def build_debian_package(package_fetcher, package_name, apt_cache, rd_obj, level
   installed_builddeps = install_debian_build_dependencies(repo_path)
   if not installed_builddeps:
     raise RosGitBuildError("%s!!! Error building %s from %s: Can't install build-dependencies!" % (level_prefix, deb_package_name, package_fetcher.url(package_name)))
-  (returncode, result, message) = run_shell_command('debuild clean', repo_path, shell=True, show_stdout=True)
+  (returncode, result, message) = run_shell_command('debuild clean', repo_path, shell=True, show_stdout=False)
   if returncode != 0:
     raise RosGitBuildError("%s!!! Error building %s from %s: %s \n %s" % (level_prefix, deb_package_name, package_fetcher.url(package_name), 'debuild clean', message))
-  (returncode, result, message) = run_shell_command('debuild binary', repo_path, shell=True, show_stdout=True)
+  (returncode, result, message) = run_shell_command('debuild binary', repo_path, shell=True, show_stdout=False)
   if returncode != 0:
     raise RosGitBuildError("%s!!! Error building %s from %s: %s \n %s" % (level_prefix, deb_package_name, package_fetcher.url(package_name), 'debuild binary', message))
   deb_files = glob.glob(os.path.join(repo_path, '..', '%s*.deb' % (deb_package_name + '_' + rd_obj.get_version(package_name, full_version=True))))

@@ -41,7 +41,11 @@ cd ros-installer
 #)
 
 echo "* Installing bootstrap and core library dependencies..."
-sudo apt-get -y install build-essential python-yaml cmake subversion wget python-setuptools mercurial git-core bzr libapr1-dev libaprutil1-dev libbz2-dev python-dev libgtest-dev python-paramiko libboost-all-dev liblog4cxx10-dev pkg-config python-empy python-nose swig devscripts python-argparse libqt4-dev python-dateutil python-apt
+sudo apt-get -y install build-essential python-yaml cmake subversion wget \
+  python-setuptools mercurial git-core bzr libapr1-dev libaprutil1-dev \
+  libbz2-dev python-dev libgtest-dev python-paramiko libboost-all-dev \
+  liblog4cxx10-dev pkg-config python-empy python-nose swig devscripts \
+  python-argparse libqt4-dev python-dateutil python-apt python-docutils
 
 function debian_package_installed() {
 PACKAGE_NAME=$1
@@ -101,13 +105,13 @@ return $?
 echo "* Downloading and installing bootstrap packages..."
 BASE_PACKAGES_URL="http://packages.ros.org/ros/ubuntu/"
 # NOTE: order is important.
-ros_bootstrap_package catkinpkg  python-catkin-pkg 0.1.19-1 ${BASE_PACKAGES_URL}
+ros_bootstrap_package catkinpkg  python-catkin-pkg 0.1.20-1 ${BASE_PACKAGES_URL}
 ros_bootstrap_package vcstools   python-vcstools   0.1.31-1 ${BASE_PACKAGES_URL}
-ros_bootstrap_package rosdistro  python-rosdistro  0.2.13-1  ${BASE_PACKAGES_URL}
+ros_bootstrap_package rospkg     python-rospkg     1.0.23-1 ${BASE_PACKAGES_URL}
+ros_bootstrap_package rosdistro  python-rosdistro  0.2.14-1  ${BASE_PACKAGES_URL}
 ros_bootstrap_package rosinstall python-rosinstall 0.6.29-1 ${BASE_PACKAGES_URL}
-ros_bootstrap_package rospkg     python-rospkg     1.0.21-1 ${BASE_PACKAGES_URL}
-ros_bootstrap_package rosinstallgenerator python-rosinstall-generator 0.1.2-1 ${BASE_PACKAGES_URL}
-ros_bootstrap_package rosdep     python-rosdep     0.10.21-1 ${BASE_PACKAGES_URL}
+ros_bootstrap_package rosinstallgenerator python-rosinstall-generator 0.1.3-1 ${BASE_PACKAGES_URL}
+ros_bootstrap_package rosdep     python-rosdep     0.10.22-1 ${BASE_PACKAGES_URL}
 ros_bootstrap_package wstool     python-wstool     0.0.3-1 ${BASE_PACKAGES_URL}
 
 echo "* Bootstrapping rosdep..."
