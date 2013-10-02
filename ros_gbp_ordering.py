@@ -80,7 +80,7 @@ which that package requires to build."""
       raise "Can't find package %s in the distro cache" % (pkg_name)
     pkg = parse_package_string(distro.package_xmls[pkg_name])
 
-    package_dependencies[pkg_name] = set([p.name for p in (pkg.build_depends + pkg.run_depends) if p.name in distro.package_xmls])
+    package_dependencies[pkg_name] = set([p.name for p in (pkg.buildtool_depends + pkg.build_depends + pkg.run_depends) if p.name in distro.package_xmls])
     for name in package_dependencies[pkg_name]:
       packages_to_process.append(name)
 

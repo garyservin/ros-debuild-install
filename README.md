@@ -28,7 +28,7 @@ Initial setup:
 
 At this point, walking away for a little while is not a bad idea.  It takes a long time (hours) to download, compile and install these debs.  If you need to reboot or stop the work for some reason, you can stop this script with Ctrl-C at pretty much any time, and come back and run the last line again, it should pick up reasonably near to where it left off.
 
-You can use any of the [REP 131][2] variants in place of desktop.  I usually start with the bare-bones install (ros\_comm) and then go from there.
+You can use any of the [REP 131][2] variants in place of desktop.  I usually start with the bare-bones install (ros\_base) and then go from there.
 
 [2]: http://ros.org/reps/rep-0131.html#variants
 
