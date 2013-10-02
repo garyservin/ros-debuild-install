@@ -12,7 +12,7 @@ def parse_options():
       'Packages are listed in a correct build order.')
   parser.add_argument('--workspace', dest='workspace', default='./tmp_workspace',
       help='A directory where repositories will be checked out into.')
-  parser.add_argument('--distro', dest='distro', default='groovy',
+  parser.add_argument('--distro', dest='distro', default='hydro',
       help='The ros distro. electric, fuerte, groovy, hydro')
   parser.add_argument(dest='packages', nargs='+')
   args = parser.parse_args()

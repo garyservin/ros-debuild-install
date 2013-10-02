@@ -18,7 +18,7 @@ def parse_options():
   parser = argparse.ArgumentParser(description = 'Builds and installs Debian packages for ROS git-buildpackage packages.')
   parser.add_argument('--workspace', dest='workspace', default='./tmp_workspace',
       help='Directory for building packages within.  Repositories will be checked out into this directory.')
-  parser.add_argument('--distro', dest='distro', default='groovy',
+  parser.add_argument('--distro', dest='distro', default='hydro',
       help='The ros distro. Probably groovy or hydro.')
   parser.add_argument(dest='packages', nargs='+',
       help='List of ROS packages to install')
