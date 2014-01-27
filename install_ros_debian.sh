@@ -45,7 +45,7 @@ sudo apt-get -y install build-essential python-yaml cmake subversion wget \
   python-setuptools mercurial git-core bzr libapr1-dev libaprutil1-dev \
   libbz2-dev python-dev libgtest-dev python-paramiko libboost-all-dev \
   liblog4cxx10-dev pkg-config python-empy python-nose swig devscripts \
-  python-argparse libqt4-dev python-dateutil python-apt python-docutils
+  python-argparse libqt4-dev python-dateutil python-apt python-docutils curl
 
 function debian_package_installed() {
 PACKAGE_NAME=$1
